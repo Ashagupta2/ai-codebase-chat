@@ -1,0 +1,6 @@
+env/
+__pycache__/
+.env
+chroma_db/
+cloned_repo/
+*.pyc
