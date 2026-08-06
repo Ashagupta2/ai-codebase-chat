@@ -3,6 +3,7 @@ import stat
 import shutil
 from git import Repo
 from dotenv import load_dotenv
+import streamlit as st
 
 from llama_index.core import (
     VectorStoreIndex,
@@ -43,7 +44,7 @@ def build_index(source_dir: str):
     """Read all code files, chunk them, embed them, and store in ChromaDB."""
 
     
-    api_key = os.getenv("GOOGLE_API_KEY")
+    api_key = os.getenv("GOOGLE_API_KEY") or st.secrets.get("GOOGLE_API_KEY")
 
     Settings.embed_model = HuggingFaceEmbedding(
         model_name="BAAI/bge-small-en-v1.5"

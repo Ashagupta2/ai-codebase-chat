@@ -1,4 +1,5 @@
 import os
+import streamlit as st
 from dotenv import load_dotenv
 
 from llama_index.core import VectorStoreIndex, Settings
@@ -16,7 +17,7 @@ COLLECTION_NAME = "codebase"
 def load_index():
     """Load the already-built index from disk — no re-cloning, no re-embedding."""
 
-    api_key = os.getenv("GOOGLE_API_KEY")
+    api_key = os.getenv("GOOGLE_API_KEY") or st.secrets.get("GOOGLE_API_KEY")
 
     
     Settings.embed_model = HuggingFaceEmbedding(
