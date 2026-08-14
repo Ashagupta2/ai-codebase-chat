@@ -41,21 +41,18 @@ def clone_repo(repo_url: str) -> str:
 
 
 def build_index(source_dir: str):
-    """Read all code files, chunk them, embed them, and store in ChromaDB."""
-
-    
-    api_key = os.getenv("GOOGLE_API_KEY") or st.secrets.get("GOOGLE_API_KEY")
+   
 
     Settings.embed_model = HuggingFaceEmbedding(
         model_name="BAAI/bge-small-en-v1.5"
     )
+    api_key = os.getenv("GOOGLE_API_KEY")
     Settings.llm = GoogleGenAI(
         model_name="models/gemini-2.0-flash",
         api_key=api_key,
     )
 
     print("Reading files from cloned repo...")
-    
     documents = SimpleDirectoryReader(
         input_dir=source_dir,
         recursive=True,
@@ -66,8 +63,11 @@ def build_index(source_dir: str):
     ).load_data()
     print(f"Loaded {len(documents)} files.")
 
-
     chroma_client = chromadb.PersistentClient(path=CHROMA_DIR)
+    try:
+        chroma_client.delete_collection(COLLECTION_NAME)
+    except Exception:
+        pass  
     chroma_collection = chroma_client.get_or_create_collection(COLLECTION_NAME)
     vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
